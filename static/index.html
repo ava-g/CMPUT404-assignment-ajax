@@ -45,7 +45,8 @@
       #c {
           background-image: url("zeezee.png");
       }
-  </style> 
+  </style>
+  <body>
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
     <script>
 var canvas = document.getElementById('c');
@@ -63,14 +64,14 @@ img3.src = "unicorn_zee.png";
 
 function sendJSONXMLHTTPRequest(url, objects, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
+    xhr.open("POST", url, true);
     xhr.responseType = "json";
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             try {
                 if (xhr.status == 200) {
                     //XXX: parse some JSON from the request!
-                    var xhrResponse = JSON.parse(xhr.responseText);
+                    var xhrResponse = JSON.parse(xhr.response);
                     //XXX: Pass the data to the callback!
                     callback(xhrResponse);
                 }
@@ -84,7 +85,7 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
     //XXX: set the mimetype and the accept headers!
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-type", "application/json");
-    xhr.send(objects);
+    xhr.send(JSON.stringify(objects));
     // Remember to use application/json !
 }
 
@@ -308,7 +309,7 @@ function update() {
             "Accept": "application/json"
         }
     }
-    const response = fetch("http://127.0.0.1:5000/listener/" + id, requestArgs).then(function(response) {
+    const resp = fetch("http://127.0.0.1:5000/listener/" + id, requestArgs).then(function(response) {
         response.json();
     }).then(function(updates) {
         for (var i in updates) {
@@ -321,8 +322,7 @@ function update() {
 }
 
 // update my drawing on other users' screen
-const response = fetch("http://127.0.0.1:5000/listener/" + id, {method: "POST"});
-
+const resp = fetch("http://127.0.0.1:5000/listener/" + id, {method: "POST"});
 // update drawings
 sendJSONXMLHTTPRequest("http://127.0.0.1:5000/world" + id, {}, function(response) {
     world = JSON.parse(response);
